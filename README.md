@@ -5,11 +5,21 @@ Tool chuyển văn bản thành giọng nói (Text-to-Speech) hỗ trợ tiếng
 ## ✨ Tính Năng
 
 - ✅ Hỗ trợ tiếng Việt với giọng đọc tự nhiên
-- 🎤 Nhiều lựa chọn giọng đọc (Nam/Nữ, Miền Bắc/Miền Nam)
+- 🎤 Nhiều lựa chọn giọng đọc (Nam/Nữ, Miền Bắc)
+- 🎭 **7 Preset giọng đọc phong cách CapCut:**
+  - Bình thường
+  - **Giọng Bé Con / Loli (CapCut)** - Giọng cao, dễ thương
+  - Giọng Nữ Dễ Thương
+  - Giọng Trầm Ấm
+  - Giọng Nhanh
+  - Giọng Chậm Rõ Ràng
+  - Giọng Robot
+- ⚡ Điều chỉnh tốc độ đọc (-50% đến +50%)
+- 🎵 Điều chỉnh cao độ giọng (-50Hz đến +50Hz)
 - 🔊 Phát âm thanh trực tiếp
 - 💾 Lưu file MP3
 - 🖥️ Giao diện đẹp mắt, dễ sử dụng
-- ⚡ Chạy hoàn toàn offline sau khi tải giọng đọc
+- 🚀 Chạy hoàn toàn offline sau khi tải giọng đọc
 
 ## 📋 Yêu Cầu Hệ Thống
 
@@ -39,15 +49,38 @@ Double-click vào file `run.bat` để mở ứng dụng.
 ### Sử dụng giao diện
 
 1. **Nhập văn bản**: Gõ hoặc dán văn bản cần đọc vào ô text
-2. **Chọn giọng đọc**: Chọn giọng Nam/Nữ, Miền Bắc/Miền Nam từ dropdown
-3. **Phát âm thanh**: Click nút "▶️ Phát Âm Thanh" để nghe
-4. **Dừng**: Click nút "⏹️ Dừng" để dừng phát
-5. **Lưu file**: Click nút "💾 Lưu File MP3" để lưu thành file
+2. **Chọn giọng đọc**: Chọn giọng Nam/Nữ từ dropdown đầu tiên
+3. **Chọn kiểu giọng**: Chọn preset từ dropdown thứ hai (Bình thường, Loli, v.v.)
+4. **Điều chỉnh tốc độ**: Kéo thanh "⚡ Tốc độ" để nhanh/chậm hơn
+5. **Điều chỉnh cao độ**: Kéo thanh "🎵 Cao độ" để cao/trầm hơn
+6. **Phát âm thanh**: Click nút "▶️ Phát Âm Thanh" để nghe
+7. **Dừng**: Click nút "⏹️ Dừng" để dừng phát
+8. **Lưu file**: Click nút "💾 Lưu File MP3" để lưu thành file
+
+### 💡 Tips sử dụng giọng CapCut
+
+- **Giọng Loli/Bé Con**: Chọn preset "Giọng Bé Con / Loli (CapCut)" hoặc tự điều chỉnh:
+  - Cao độ: +40 đến +50
+  - Tốc độ: +5 đến +15
+- **Giọng nữ dễ thương**: Cao độ +20 đến +30, Tốc độ +5
+- **Giọng nam trầm**: Cao độ -30 đến -40, Tốc độ -10
+- **Đọc nhanh**: Tốc độ +30 đến +50
+- **Đọc rõ ràng**: Tốc độ -15 đến -25
 
 ## 🎤 Các Giọng Đọc Có Sẵn
 
+### Giọng gốc:
 - **Nữ Miền Bắc (HoaiMy)**: Giọng nữ tự nhiên, giọng Miền Bắc
 - **Nam Miền Bắc (NamMinh)**: Giọng nam trầm ấm, giọng Miền Bắc
+
+### Preset giọng đọc (Phong cách CapCut):
+- **Bình thường**: Giọng gốc không điều chỉnh
+- **Giọng Bé Con / Loli (CapCut)**: Giọng cao, dễ thương như TikTok/CapCut (Tốc độ: +10%, Cao độ: +50Hz)
+- **Giọng Nữ Dễ Thương**: Giọng nữ ngọt ngào (Tốc độ: +5%, Cao độ: +30Hz)
+- **Giọng Trầm Ấm**: Giọng trầm, ấm áp (Tốc độ: -10%, Cao độ: -30Hz)
+- **Giọng Nhanh**: Đọc nhanh, năng động (Tốc độ: +30%)
+- **Giọng Chậm Rõ Ràng**: Đọc chậm, rõ từng chữ (Tốc độ: -20%)
+- **Giọng Robot**: Giọng robot, cơ khí (Cao độ: -50Hz)
 
 ## 📁 Cấu Trúc Thư Mục
 
