@@ -19,7 +19,7 @@ class VietnameseTTSApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Chuyển Văn Bản Thành Giọng Nói - Vietnamese TTS")
-        self.root.geometry("700x600")
+        self.root.geometry("750x750")
         self.root.resizable(False, False)
 
         # Màu sắc giao diện
@@ -37,6 +37,17 @@ class VietnameseTTSApp:
         self.voices = {
             "Nữ Miền Bắc (HoaiMy)": "vi-VN-HoaiMyNeural",
             "Nam Miền Bắc (NamMinh)": "vi-VN-NamMinhNeural"
+        }
+
+        # Preset giọng đọc (kiểu CapCut)
+        self.voice_presets = {
+            "Bình thường": {"rate": 0, "pitch": 0},
+            "Giọng Bé Con / Loli (CapCut)": {"rate": 10, "pitch": 50},
+            "Giọng Nữ Dễ Thương": {"rate": 5, "pitch": 30},
+            "Giọng Trầm Ấm": {"rate": -10, "pitch": -30},
+            "Giọng Nhanh": {"rate": 30, "pitch": 0},
+            "Giọng Chậm Rõ Ràng": {"rate": -20, "pitch": 0},
+            "Giọng Robot": {"rate": 0, "pitch": -50}
         }
 
         self.temp_files = []  # Danh sách các file tạm để cleanup sau
@@ -115,6 +126,91 @@ class VietnameseTTSApp:
         )
         self.voice_combo.pack(side=tk.LEFT)
 
+        # Khung chọn preset giọng đọc
+        preset_frame = tk.Frame(main_frame, bg=self.bg_color)
+        preset_frame.pack(fill=tk.X, pady=(0, 15))
+
+        preset_label = tk.Label(
+            preset_frame,
+            text="🎭 Kiểu giọng đọc:",
+            font=("Segoe UI", 11, "bold"),
+            bg=self.bg_color,
+            fg=self.text_color
+        )
+        preset_label.pack(side=tk.LEFT, padx=(0, 10))
+
+        self.preset_var = tk.StringVar(value=list(self.voice_presets.keys())[0])
+        self.preset_combo = ttk.Combobox(
+            preset_frame,
+            textvariable=self.preset_var,
+            values=list(self.voice_presets.keys()),
+            state="readonly",
+            font=("Segoe UI", 10),
+            width=30
+        )
+        self.preset_combo.pack(side=tk.LEFT)
+        self.preset_combo.bind("<<ComboboxSelected>>", self.on_preset_changed)
+
+        # Khung điều chỉnh tốc độ và cao độ
+        adjust_frame = tk.Frame(main_frame, bg=self.bg_color)
+        adjust_frame.pack(fill=tk.X, pady=(0, 15))
+
+        # Tốc độ
+        speed_label = tk.Label(
+            adjust_frame,
+            text="⚡ Tốc độ:",
+            font=("Segoe UI", 10, "bold"),
+            bg=self.bg_color,
+            fg=self.text_color,
+            width=12,
+            anchor=tk.W
+        )
+        speed_label.grid(row=0, column=0, padx=(0, 5))
+
+        self.speed_var = tk.IntVar(value=0)
+        self.speed_scale = tk.Scale(
+            adjust_frame,
+            from_=-50,
+            to=50,
+            orient=tk.HORIZONTAL,
+            variable=self.speed_var,
+            bg=self.bg_color,
+            fg=self.text_color,
+            highlightthickness=0,
+            length=350,
+            showvalue=True,
+            font=("Segoe UI", 8)
+        )
+        self.speed_scale.grid(row=0, column=1, padx=(0, 10))
+
+        # Cao độ
+        pitch_label = tk.Label(
+            adjust_frame,
+            text="🎵 Cao độ:",
+            font=("Segoe UI", 10, "bold"),
+            bg=self.bg_color,
+            fg=self.text_color,
+            width=12,
+            anchor=tk.W
+        )
+        pitch_label.grid(row=1, column=0, padx=(0, 5), pady=(10, 0))
+
+        self.pitch_var = tk.IntVar(value=0)
+        self.pitch_scale = tk.Scale(
+            adjust_frame,
+            from_=-50,
+            to=50,
+            orient=tk.HORIZONTAL,
+            variable=self.pitch_var,
+            bg=self.bg_color,
+            fg=self.text_color,
+            highlightthickness=0,
+            length=350,
+            showvalue=True,
+            font=("Segoe UI", 8)
+        )
+        self.pitch_scale.grid(row=1, column=1, padx=(0, 10), pady=(10, 0))
+
         # Khung nút điều khiển
         button_frame = tk.Frame(main_frame, bg=self.bg_color)
         button_frame.pack(pady=(0, 15))
@@ -189,17 +285,28 @@ class VietnameseTTSApp:
         """Lấy giọng đọc được chọn"""
         return self.voices[self.voice_var.get()]
 
-    async def generate_speech_async(self, text, voice, output_file):
+    def on_preset_changed(self, event=None):
+        """Xử lý khi thay đổi preset"""
+        preset_name = self.preset_var.get()
+        preset = self.voice_presets[preset_name]
+        self.speed_var.set(preset["rate"])
+        self.pitch_var.set(preset["pitch"])
+
+    async def generate_speech_async(self, text, voice, output_file, rate=0, pitch=0):
         """Tạo file âm thanh từ văn bản (async)"""
-        communicate = edge_tts.Communicate(text, voice)
+        # Tạo SSML với rate và pitch
+        rate_str = f"{rate:+d}%" if rate != 0 else "+0%"
+        pitch_str = f"{pitch:+d}Hz" if pitch != 0 else "+0Hz"
+
+        communicate = edge_tts.Communicate(text, voice, rate=rate_str, pitch=pitch_str)
         await communicate.save(output_file)
 
-    def generate_speech(self, text, voice, output_file):
+    def generate_speech(self, text, voice, output_file, rate=0, pitch=0):
         """Tạo file âm thanh từ văn bản"""
         try:
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
-            loop.run_until_complete(self.generate_speech_async(text, voice, output_file))
+            loop.run_until_complete(self.generate_speech_async(text, voice, output_file, rate, pitch))
             loop.close()
             return True
         except Exception as e:
@@ -227,8 +334,10 @@ class VietnameseTTSApp:
                 self.temp_files.append(temp_file)
 
                 voice = self.get_selected_voice()
+                rate = self.speed_var.get()
+                pitch = self.pitch_var.get()
 
-                if self.generate_speech(text, voice, temp_file):
+                if self.generate_speech(text, voice, temp_file, rate, pitch):
                     self.status_var.set("Đang phát âm thanh...")
 
                     # Phát âm thanh
@@ -291,8 +400,10 @@ class VietnameseTTSApp:
         def save_thread():
             try:
                 voice = self.get_selected_voice()
+                rate = self.speed_var.get()
+                pitch = self.pitch_var.get()
 
-                if self.generate_speech(text, voice, file_path):
+                if self.generate_speech(text, voice, file_path, rate, pitch):
                     self.status_var.set(f"Đã lưu: {os.path.basename(file_path)}")
                     messagebox.showinfo("Thành công", f"Đã lưu file:\n{file_path}")
                 else:
