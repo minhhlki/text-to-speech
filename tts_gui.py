@@ -13,6 +13,7 @@ import pygame
 import os
 import tempfile
 import threading
+import time
 
 class VietnameseTTSApp:
     def __init__(self, root):
@@ -38,7 +39,7 @@ class VietnameseTTSApp:
             "Nam Miền Bắc (NamMinh)": "vi-VN-NamMinhNeural"
         }
 
-        self.temp_file = None
+        self.temp_files = []  # Danh sách các file tạm để cleanup sau
         self.is_playing = False
 
         self.setup_ui()
@@ -218,19 +219,20 @@ class VietnameseTTSApp:
 
         def play_thread():
             try:
-                # Tạo file tạm
-                if self.temp_file and os.path.exists(self.temp_file):
-                    os.remove(self.temp_file)
+                # Dừng âm thanh đang phát (nếu có) để giải phóng file
+                pygame.mixer.music.stop()
 
-                self.temp_file = tempfile.mktemp(suffix=".mp3")
+                # Tạo file tạm mới
+                temp_file = tempfile.mktemp(suffix=".mp3")
+                self.temp_files.append(temp_file)
 
                 voice = self.get_selected_voice()
 
-                if self.generate_speech(text, voice, self.temp_file):
+                if self.generate_speech(text, voice, temp_file):
                     self.status_var.set("Đang phát âm thanh...")
 
                     # Phát âm thanh
-                    pygame.mixer.music.load(self.temp_file)
+                    pygame.mixer.music.load(temp_file)
                     pygame.mixer.music.play()
 
                     self.is_playing = True
@@ -312,12 +314,23 @@ class VietnameseTTSApp:
         if self.is_playing:
             pygame.mixer.music.stop()
 
-        # Xóa file tạm
-        if self.temp_file and os.path.exists(self.temp_file):
-            try:
-                os.remove(self.temp_file)
-            except:
-                pass
+        # Dừng mixer và giải phóng tất cả file
+        try:
+            pygame.mixer.music.unload()
+        except:
+            # Nếu không có method unload, dùng stop
+            pygame.mixer.music.stop()
+
+        # Đợi một chút để đảm bảo file được giải phóng
+        time.sleep(0.2)
+
+        # Xóa tất cả file tạm
+        for temp_file in self.temp_files:
+            if os.path.exists(temp_file):
+                try:
+                    os.remove(temp_file)
+                except:
+                    pass
 
         self.root.destroy()
 
